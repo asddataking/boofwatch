@@ -1,0 +1,94 @@
+# BoofMap
+
+**Find fire. Avoid boof.**
+
+Mobile-first community cannabis quality & value reporting — plus meetup/seller experience reports.
+
+## Tech stack
+
+- Next.js App Router · TypeScript · Tailwind CSS
+- **Progressive Web App** (installable, offline shell, service worker)
+- **Convex** (database, realtime, server functions)
+- **Clerk** (authentication, integrated with Convex JWT)
+- **Cloudflare R2** (report images via presigned uploads)
+- Leaflet + OpenStreetMap · Framer Motion
+
+BoofMap is a **browser-based PWA** — not a native App Store / Play Store app. Users can add it to their home screen from Safari or Chrome.
+
+## Setup
+
+### 1. Convex
+
+```bash
+npm install
+npx convex dev
+```
+
+Sign in when prompted. This creates your deployment and writes `NEXT_PUBLIC_CONVEX_URL` to `.env.local`.
+
+### 2. Cloudflare R2
+
+1. Create an R2 bucket and enable public access (or custom domain).
+2. Create API tokens with read/write on that bucket.
+3. In the [Convex dashboard](https://dashboard.convex.dev) → your project → **Settings → Environment variables**, add:
+
+| Variable | Description |
+|----------|-------------|
+| `R2_ACCOUNT_ID` | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | R2 API token access key |
+| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
+| `R2_BUCKET_NAME` | Bucket name |
+| `R2_PUBLIC_URL` | Public base URL for objects (e.g. `https://pub-xxx.r2.dev`) |
+
+### 3. Clerk + Convex auth
+
+1. Create a [Clerk](https://clerk.com) application and add to `.env.local`:
+
+   ```
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+   CLERK_SECRET_KEY=sk_test_...
+   ```
+
+2. In the Clerk Dashboard, **activate the Convex integration** and ensure the JWT template is named exactly `convex`.
+
+3. Copy your Clerk **Frontend API URL** into `.env.local` and the Convex dashboard:
+
+   ```
+   CLERK_FRONTEND_API_URL=https://your-app.clerk.accounts.dev
+   ```
+
+4. Run `npx convex dev` so `convex/auth.config.ts` syncs to your deployment.
+
+### 4. Admin access
+
+After signing in once, copy your **Clerk user ID** from `/profile` and set:
+
+```
+ADMIN_USER_IDS=user_xxxxxxxx
+```
+
+Also add `ADMIN_USER_IDS` in the Convex dashboard (same value).
+
+### 5. Run
+
+```bash
+npm run dev
+```
+
+Runs Next.js and Convex dev servers together.
+
+### 6. Seed demo data (optional)
+
+In the Convex dashboard, run the `seed:seedDemo` mutation once on an empty database.
+
+## Local dev without Convex
+
+If `NEXT_PUBLIC_CONVEX_URL` is unset, the app uses **local seed data** (no realtime, no uploads).
+
+## Admin dashboard
+
+Visit `/admin` when signed in with a Clerk user ID listed in `ADMIN_USER_IDS`.
+
+## Legal tone
+
+All copy uses community-report language. PII (phones, addresses, legal names, plates) is blocked in Convex mutations.

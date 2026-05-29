@@ -1,0 +1,103 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
+import { AppShell } from "@/components/AppShell";
+import { PageTransition } from "@/components/PageTransition";
+import { ReportCard } from "@/components/ReportCard";
+import { ScoreBadge } from "@/components/ScoreBadge";
+import { fetchBrandProfile } from "@/lib/convex/queries";
+
+export default async function BrandPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const brand = await fetchBrandProfile(slug);
+  if (!brand) notFound();
+
+  return (
+    <AppShell>
+      <PageTransition>
+        <div className="py-4">
+          <Link href="/brands" className="text-xs text-zinc-500 hover:text-zinc-400">
+            ← All brands
+          </Link>
+          <h2 className="mt-2 font-heading text-2xl font-bold text-white">
+            {brand.name}
+          </h2>
+
+          {brand.mold_report_count > 0 && (
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-red-400" />
+              <div>
+                <p className="text-sm font-medium text-red-300">
+                  Reported mold concern
+                </p>
+                <p className="mt-1 text-xs text-red-400/80">
+                  {brand.mold_report_count} community report
+                  {brand.mold_report_count > 1 ? "s" : ""} flagged a possible mold
+                  concern. Always inspect products yourself.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="glass-card p-4">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+                Trust score
+              </p>
+              <p className="mt-1 font-heading text-3xl font-bold text-emerald-400">
+                {brand.trust_score}
+              </p>
+            </div>
+            <div className="glass-card p-4">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+                Avg Boof Score
+              </p>
+              <div className="mt-2">
+                <ScoreBadge score={brand.avg_boof_score} />
+              </div>
+            </div>
+            <div className="glass-card col-span-2 p-4">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+                Most common reported issue
+              </p>
+              <p className="mt-1 text-sm text-zinc-300">
+                {brand.top_complaint ?? "No major pattern yet"}
+              </p>
+            </div>
+          </div>
+
+          <section className="mt-8">
+            <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-zinc-500">
+              Product breakdown
+            </h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {Object.entries(brand.product_breakdown).map(([type, count]) => (
+                <span
+                  key={type}
+                  className="rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-1.5 text-xs capitalize text-zinc-400"
+                >
+                  {type}: {count}
+                </span>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-8">
+            <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-zinc-500">
+              Recent community reports
+            </h3>
+            <div className="mt-4 space-y-4">
+              {brand.recent_reports.map((r, i) => (
+                <ReportCard key={r.id} report={r} index={i} compact />
+              ))}
+            </div>
+          </section>
+        </div>
+      </PageTransition>
+    </AppShell>
+  );
+}

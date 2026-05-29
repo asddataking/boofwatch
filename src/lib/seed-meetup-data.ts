@@ -1,0 +1,90 @@
+import type { MeetupReport } from "./types";
+
+const daysAgo = (d: number) =>
+  new Date(Date.now() - d * 86400000).toISOString();
+
+export const SEED_MEETUP_REPORTS: MeetupReport[] = [
+  {
+    id: "m1",
+    seller_display_name: "GreenGhost23",
+    platform: "Telegram",
+    city: "Hazel Park",
+    area: "East side",
+    meetup_type: "in-person",
+    issue_tags: ["Changed Price", "Bad Communication"],
+    seller_signal: "orange",
+    notes:
+      "User-submitted experience: quoted one price in chat, different amount at meetup.",
+    latitude: 42.5125,
+    longitude: -83.1041,
+    confirm_count: 4,
+    status: "approved",
+    public_warning:
+      "3 community reports mention changed price near Hazel Park for \"GreenGhost23\".",
+    created_at: daysAgo(1),
+  },
+  {
+    id: "m2",
+    seller_display_name: "DankDeals_MI",
+    platform: "Snapchat",
+    city: "Detroit",
+    meetup_type: "delivery",
+    issue_tags: ["No Show"],
+    seller_signal: "yellow",
+    notes: "Community-reported concern: seller did not arrive at agreed window.",
+    latitude: 42.3314,
+    longitude: -83.0458,
+    confirm_count: 2,
+    status: "approved",
+    created_at: daysAgo(2),
+  },
+  {
+    id: "m3",
+    seller_display_name: "TrapStar_AA",
+    platform: "Instagram",
+    city: "Ann Arbor",
+    meetup_type: "in-person",
+    issue_tags: ["Suspected Scam", "Fake Photos"],
+    seller_signal: "red",
+    notes:
+      "Multiple users report product photos did not match what was provided.",
+    latitude: 42.2808,
+    longitude: -83.743,
+    confirm_count: 7,
+    status: "approved",
+    public_warning:
+      "3 community reports mention suspected scam near Ann Arbor for \"TrapStar_AA\".",
+    created_at: daysAgo(0.5),
+  },
+  {
+    id: "m4",
+    seller_display_name: "FerndaleFast",
+    platform: "Telegram",
+    city: "Ferndale",
+    meetup_type: "in-person",
+    issue_tags: ["Shorted Product"],
+    seller_signal: "orange",
+    notes: "Reported meetup issue: weight seemed light vs what was discussed.",
+    latitude: 42.4606,
+    longitude: -83.1346,
+    confirm_count: 3,
+    status: "approved",
+    created_at: daysAgo(3),
+  },
+  {
+    id: "m5",
+    seller_display_name: "BayCityBudz",
+    platform: "Other app",
+    city: "Bay City",
+    meetup_type: "delivery",
+    issue_tags: ["Unsafe Meetup"],
+    seller_signal: "red",
+    notes:
+      "Community-reported concern about meetup location feeling unsafe — general area only.",
+    latitude: 43.5945,
+    longitude: -83.8889,
+    confirm_count: 5,
+    status: "approved",
+    created_at: daysAgo(4),
+  },
+];
