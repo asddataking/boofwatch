@@ -13,38 +13,6 @@ import { cn } from "@/lib/utils";
 
 export function AdminDashboard() {
   const { isAdmin, loading, isAuthenticated } = useAuth();
-  const [tab, setTab] = useState<"queue" | "product" | "meetup">("queue");
-
-  const queue = useQuery(
-    api.admin.listModerationQueue,
-    isAdmin && isConvexConfigured() ? {} : "skip"
-  ) as ModerationQueueItem[] | undefined;
-
-  const flaggedProduct = useQuery(
-    api.admin.listFlaggedReports,
-    isAdmin && isConvexConfigured() ? {} : "skip"
-  ) as Report[] | undefined;
-
-  const flaggedMeetup = useQuery(
-    api.admin.listFlaggedMeetupReports,
-    isAdmin && isConvexConfigured() ? {} : "skip"
-  ) as MeetupReport[] | undefined;
-
-  const moderate = useMutation(api.admin.moderate);
-
-  const handleModerate = async (
-    sourceType: "report" | "meetupReport",
-    sourceId: string,
-    queueId: string | undefined,
-    action: "approve" | "reject"
-  ) => {
-    await moderate({
-      sourceType,
-      sourceId,
-      queueId: queueId as Id<"moderationQueue"> | undefined,
-      action,
-    });
-  };
 
   if (loading) {
     return (
@@ -77,6 +45,44 @@ export function AdminDashboard() {
       </p>
     );
   }
+
+  return <AdminDashboardConvex />;
+}
+
+function AdminDashboardConvex() {
+  const { isAdmin } = useAuth();
+  const [tab, setTab] = useState<"queue" | "product" | "meetup">("queue");
+
+  const queue = useQuery(
+    api.admin.listModerationQueue,
+    isAdmin ? {} : "skip"
+  ) as ModerationQueueItem[] | undefined;
+
+  const flaggedProduct = useQuery(
+    api.admin.listFlaggedReports,
+    isAdmin ? {} : "skip"
+  ) as Report[] | undefined;
+
+  const flaggedMeetup = useQuery(
+    api.admin.listFlaggedMeetupReports,
+    isAdmin ? {} : "skip"
+  ) as MeetupReport[] | undefined;
+
+  const moderate = useMutation(api.admin.moderate);
+
+  const handleModerate = async (
+    sourceType: "report" | "meetupReport",
+    sourceId: string,
+    queueId: string | undefined,
+    action: "approve" | "reject"
+  ) => {
+    await moderate({
+      sourceType,
+      sourceId,
+      queueId: queueId as Id<"moderationQueue"> | undefined,
+      action,
+    });
+  };
 
   return (
     <div className="space-y-6">
